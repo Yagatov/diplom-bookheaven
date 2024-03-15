@@ -1,0 +1,17 @@
+@import '../../variables';
+
+.category {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 50px;
+    gap: 10px;
+
+    .item {
+        font-size: 1.4rem;
+        font-weight: 400;
+        text-transform: uppercase;
+        opacity: .8;
+        // padding: 0 20px;
+    }
+}

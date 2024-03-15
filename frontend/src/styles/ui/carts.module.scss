@@ -1,0 +1,63 @@
+@import '../variables';
+
+.set {
+    margin-bottom: 50px;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.cart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .price {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .name {
+            font-size: 1.2rem;
+        }
+
+        .author {
+            font-size: 1rem;
+        }
+    }
+
+    .action {
+        display: flex;
+        gap: 10px;
+
+        .to {
+            cursor: pointer;
+            width: 100%;
+            padding: 7px;
+            display: flex;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.70);
+            transition: .3s ease;
+
+            &:hover {
+                color: $color-black;
+                background-color: $color-white;
+            }
+        }
+    }
+
+}

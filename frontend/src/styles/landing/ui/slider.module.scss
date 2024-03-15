@@ -1,0 +1,29 @@
+.swiper {
+    height: 275px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    position: relative;
+
+    &.reverse {
+        flex-direction: row-reverse;
+    }
+
+    .text {
+        font-weight: 600;
+        font-size: 3.2rem;
+    }
+
+    @media (max-width: 850px) {
+        img {
+            opacity: .3;
+            margin-right: -50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(.8);
+        }
+    }
+}
+

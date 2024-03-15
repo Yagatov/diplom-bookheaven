@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # bookheaven-backend:
+  #   image: 'nodedir:1.0'
+  #   container_name: 'bookheaven-backend'
+
+  #   volumes:
+  #     - './backend:/app'
+
+  #   networks:
+  #     - 'traefik-shared'
+
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.bookheaven-backend.rule=Host("book.polwin.ru") && Path(`/api`)'
+  #     - 'traefik.http.routers.bookheaven-backend.entrypoints=websecure'
+
+  #   command: ['npm', 'start']
+  # bookheaven-frontend:
+  #   image: 'nodedir:1.0'
+  #   container_name: 'bookheaven-frontend'
+
+  #   volumes:
+  #     - './frontend:/app'
+
+  #   networks:
+  #     - 'traefik-shared'
+
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.bookheaven-frontend.rule=Host("book.polwin.ru")'
+  #     - 'traefik.http.routers.bookheaven-frontend.entrypoints=websecure'
+
+  #   command: ['npm', 'run', 'dev']
+  bookdatabase:
+    image: 'mysql:8.3.0'
+    container_name: 'bookdatabase'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_PASSWORD: root
+    ports:
+      - '3306:3306'
+    volumes:
+      - './data:/var/lib/mysql'
+  bookheaven-phpmyadmin:
+    image: 'phpmyadmin/phpmyadmin:latest'
+    container_name: 'bookheaven-phpmyadmin'
+    restart: always
+    environment:
+      PMA_HOST: bookdatabase
+    depends_on:
+      - 'bookdatabase'
+    ports:
+      - '8080:80'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.bookheaven-phpmyadmin.rule=Host("phpmyadmin.polwin.ru")'
+      - 'traefik.http.routers.bookheaven-phpmyadmin.entrypoints=websecure'
+  # bookheaven-simpleserver:
+  #   image: 'nodedir:1.0'
+  #   container_name: 'app-simpleserver'
+
+  #   volumes:
+  #   - './simpleserver:/app'
+  #   - './frontend:/home/frontend'
+  #   - './backend:/home/backend'
+
+  #   command: ['npm', 'start']
+
+networks:
+  traefik-shared:
+    name: traefik-shared
+    external: true

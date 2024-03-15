@@ -1,0 +1,14 @@
+@import '../variables';
+
+:root {
+    font-size: 10px;
+}
+
+.wrapper {
+    min-height: 100vh;
+    padding: 100px 0;
+
+    background-color: $color-bg-black;
+    color: $color-white;
+}
+

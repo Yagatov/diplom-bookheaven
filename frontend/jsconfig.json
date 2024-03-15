@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "#styles/*": [
+                "styles/*"
+            ],
+            "#ui/*": [
+                "ui/*",
+                "ui/*.jsx"
+            ]
+        }
+    }
+}
