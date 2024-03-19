@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -14,16 +15,75 @@ datasource db {
 }
 
 model users {
-  id          Int       @id   @default(autoincrement())
+  id          Int           @id   @default(autoincrement())
   email       String   
-  login       String    @unique
+  login       String        @unique
   password    String
-  role        role      @default(USER)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  role        role          @default(USER)
+  avatar      String?
+  bonus       Int           @default(0)
+  orders      orders[]
+  carts       carts[]       
+  favorits    favorites[]   
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
 }
 
 enum role {
   USER
   ADMIN
+}
+
+model products {
+  id          Int       @id   @default(autoincrement())
+  status      status
+  name        String
+  description String
+  image       String
+  author      String
+  price       Float
+  categories  categories[]    
+  carts       carts[]
+  favorites   favorites[]
+}
+
+model categories {
+  id          Int       @id   @default(autoincrement())
+  status      status
+  name        String
+  navigation  Boolean   @default(false)
+  sets        Boolean   @default(false)
+  products    products[]
+}
+
+enum status {
+  ACTIVE
+  DISABLED
+}
+
+model carts {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  user        users     @relation(fields: [user_id], references: [id])
+  product_id  Int
+  product     products  @relation(fields: [product_id], references: [id])
+  quantity    Int
+}
+
+model favorites {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  user        users     @relation(fields: [user_id], references: [id])
+  product_id  Int
+  product     products  @relation(fields: [product_id], references: [id])
+  quantity    Int
+}
+
+model orders {
+  id          Int       @id   @default(autoincrement())
+  user_id     Int
+  price       Int
+  user        users     @relation(fields: [user_id], references: [id])
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
 }

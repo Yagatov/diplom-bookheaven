@@ -20,5 +20,5 @@ ReactDOM.createRoot(root).render(
             </JotaiProvider>
           </QueryClientProvider>
       </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

@@ -1,5 +1,5 @@
 import { ValidationError } from "../Errors.js";
-import UserService from "../services/UserService.js";
+import AccountService from "../services/AccountService.js";
 import { isProps } from "../utils/ValidationUtils.js";
 
 const patterns = {
@@ -47,7 +47,7 @@ class AuthValidator {
             return validation;
         }
 
-        if(await UserService.getUserByLogin(login) != null) {
+        if(await AccountService.getUserByLogin(login) != null) {
             validation.validate = false;
             validation.error = new ValidationError(401, "Пользователь уже зарегистрирован.");
             return validation;
@@ -89,7 +89,7 @@ class AuthValidator {
             return validation;
         }
 
-        const result = await UserService.getUserByLogin(login);
+        const result = await AccountService.getUserByLogin(login);
 
         if(result == null) {
             validation.validate = false;
@@ -107,7 +107,7 @@ class AuthValidator {
             error: null
         }
 
-        if(request.session?.user === undefined) {
+        if(request.session?.user == undefined) {
             validation.validate = false;
             validation.error = new ValidationError(401, "Пользователь не авторизован.");
             return validation;

@@ -1,0 +1,72 @@
+.table {
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-top: 50px;
+
+    thead {
+    }
+
+    th, td {
+        font-weight: 400;
+        padding: 5px 20px;
+        border: 1px solid rgba($color: #ffffff, $alpha: .4);
+        border-radius: 5px;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    td {
+        border: 1px solid rgba($color: #ffffff, $alpha: .1);
+    }
+}
+
+.button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: rgba($color: #ffffff, $alpha: 0.1);
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    transition: .3s ease;
+    margin: 5px;
+
+    &:hover {
+        opacity: .8;
+    }
+
+    &.bToggle {
+        background-color: rgba($color: #00b7ff, $alpha: 0.1);
+    }
+
+    &.bEdit {
+        background-color: rgba($color: #ff8800, $alpha: 0.1);
+    }
+
+    &.bDelete {
+        background-color: rgba($color: #ff0000, $alpha: 0.1);
+    }
+
+    &.bSave {
+        background-color: rgba($color: #ff00b3, $alpha: 0.1);
+    }
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.2rem;
+    user-select: none;
+
+    &:not(:last-child) {
+        margin-bottom: 20px;
+    }
+}
+
+.input {
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: 1px solid rgba($color: #ffffff, $alpha: .1);
+    width: 100px;
+}

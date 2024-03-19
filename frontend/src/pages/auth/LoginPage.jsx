@@ -28,7 +28,7 @@ export function LoginPage() {
         onSuccess: (data) => {
             const userData = data?.data?.user;
             
-            setUser(userData.login);
+            setUser(userData?.login);
 
             navigate('/account');
         },

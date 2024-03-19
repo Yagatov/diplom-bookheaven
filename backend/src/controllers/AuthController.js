@@ -1,4 +1,5 @@
-import { ServerError, ValidationError } from "../Errors.js";
+import { status } from "@prisma/client";
+import { ValidationError } from "../Errors.js";
 import AuthService from "../services/AuthService.js";
 
 import AuthValidator from "../validators/AuthValidator.js";
@@ -9,6 +10,16 @@ class AuthController {
         const { validate, error: validateError } = await AuthValidator.registration(req);
         
         if(!validate) {
+            if(validateError.getMessage() == "Пользователь уже авторизован.") {
+                res.status(401).send({
+                    status: "OK",
+                    message: "Пользователь был уже авторизован",
+                    user: {
+                        login: req.session?.user?.login
+                    }
+                });
+                return;
+            }
             return next(validateError);
         }
 
@@ -17,6 +28,7 @@ class AuthController {
         const { client, error: resultError} = await AuthService.registration(email, login, password);
 
         if(resultError !== null) {
+            console.log(resultError)
             return next(resultError);
         }
 
@@ -40,6 +52,17 @@ class AuthController {
         const { validate, error: validateError, client } = await AuthValidator.login(req);
         
         if(!validate) {
+            if(validateError.getMessage() == "Пользователь уже авторизован.") {
+                res.send({
+                    status: "OK",
+                    message: "Пользователь был уже авторизован",
+                    user: {
+                        login: req.session?.user?.login
+                    }
+                });
+                return;
+            }
+
             return next(validateError);
         }
 
@@ -77,6 +100,23 @@ class AuthController {
             status: "OK",
             message: "Успешный выход"
         })
+    }
+
+    static async check(req, res, next) {
+        if(req.session?.user == undefined) {
+            res.send({
+                status: "OK",
+                auth: false
+            });
+        } else {
+            res.send({
+                status: "OK",
+                auth: true,
+                user: {
+                    login: req?.session?.user?.login
+                }
+            });
+        }
     }
 }
 

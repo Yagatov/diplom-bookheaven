@@ -23,6 +23,7 @@ export function RegisterPage() {
 
     const mutation = useMutation({
         mutationFn: (data) => {
+            console.log(data);
             return Request.post('/api/auth/registration', data)
         },
         onSuccess: (data) => {

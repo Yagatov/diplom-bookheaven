@@ -16,12 +16,21 @@
     gap: 30px;
 }
 
+.cont {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .cart {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-width: 190px;
+    width: 100%;
 
     .info {
+        margin-top: auto;
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -60,4 +69,19 @@
         }
     }
 
+}
+
+.btn {
+    cursor: pointer;
+    width: 100%;
+    padding: 7px;
+    display: flex;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.70);
+    transition: .3s ease;
+
+    &:hover {
+        color: $color-black;
+        background-color: $color-white;
+    }
 }

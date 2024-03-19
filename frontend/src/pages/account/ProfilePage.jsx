@@ -1,36 +1,67 @@
+import pages from '#styles/account/pages.module.scss';
+import styles from '#styles/account/pages/profile.module.scss';
+
+import { Link } from 'react-router-dom';
+
 import Request from '../../Request.js';
 
-import { useMutation } from '@tanstack/react-query';
-
-import { Link, useNavigate } from 'react-router-dom';
-
-import { useAtom } from 'jotai';
-import UserAtom from '../../atoms/UserAtom.js';
+import { useQuery } from '@tanstack/react-query'
 
 export function ProfilePage() {
-    const [ user, setUser ] = useAtom(UserAtom);
-    const navigate = useNavigate();
 
-    const mutation = useMutation({
-        mutationFn: () => {
-            return Request.post('/api/auth/logout')
+    const { isPending, isSuccess, isError, data, error } = useQuery({
+        queryKey: ['accountProfile'],
+        queryFn: () => {
+            return Request.get("/api/account/profile");
         }
-    })
+    });
 
-    function logoutHandler() {
-        mutation.mutate();
-        setUser(null);
-        navigate('/auth');
-    }
 
     return (
-        <>
-            <p>This is Profile Page {user}</p>
-            <br/>
-            <button style={{
-                color: 'white',
-                cursor: 'pointer'
-            }} onClick={logoutHandler}>Выйти из аккаунта</button>
-        </>
+        <div className={pages.content}>
+            <h2 className={pages.title}>{ isPending ? "Загрузка" : isError ? "Ошибка" : "Профиль"}</h2>
+
+            {
+                isSuccess && (
+                    <div className={pages.box}>
+                        <div className={styles.profile}>
+                            <div className={styles.ava}>
+                                <img src={data.data.avatar == null ? "/images/avatar.jpg" : Request.getUri() + "/public/images/avatars/" + data.data.avatar} alt=""/>
+                            </div>
+                            <div className={styles.info}>
+                                <div className={styles.nickname}>{data.data.login}</div>
+                                <div className={styles.email}>{data.data.email}</div>
+                            </div>
+                            <Link to="/account/settings" className={styles.action} >
+                                <img src="/images/icons/user_settings.svg" width={25}/>
+                                Настроить
+                            </Link>
+                            {
+                                data.data.role == "ADMIN" && (
+                                    <Link to="/admin" className={styles.action} >
+                                        <img src="/images/icons/admin.svg" width={25}/>
+                                        Админ
+                                    </Link>
+                                )
+                            }
+                        </div>
+
+                        <div className={styles.stats}>
+                            <StatItem name="Бонусы" value={data.data.bonus}/>
+                        </div>
+                    </div>
+                ) 
+            }
+            
+        </div>
     )
+}
+
+function StatItem({name, value}) {
+    return (
+        <div className={styles.item}>
+            <div className={styles.name}>{name}</div>
+            <div className={styles.value}>{value}</div>
+        </div>
+    );
 }

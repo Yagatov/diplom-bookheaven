@@ -1,6 +1,7 @@
 
 import express from 'express';
 import session from 'express-session';
+import fileUpload from 'express-fileupload';
 
 import multicors from './utils/MultiCors.js';
 import RouteManager from './routers/RouteManager.js';
@@ -13,7 +14,7 @@ function init(fromApp) {
     app = fromApp;
 
     onStart();
-
+ 
     RouteManager(app);
 
     onEnd();
@@ -30,6 +31,10 @@ function onStart() {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365 * 5
         }
+    }));
+    app.use('/public', express.static('public'));
+    app.use(fileUpload({
+        limits: { fileSize: 50 * 1024 * 1024 },
     }));
 }
 
