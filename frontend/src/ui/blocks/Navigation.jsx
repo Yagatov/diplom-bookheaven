@@ -1,18 +1,20 @@
-import styles from '#styles/landing/base.module.scss';
+import styles from '#styles/ui/navigation.module.scss';
+import markup from '#styles/global/markup.module.scss';
 
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
-export function Navigation({buttons: NavigationButtons}) {
+export function Navigation({ buttons: NavigationButtons }) {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
-    const [isMenu, setIsMenu] = useState(false);
-    
-    function toggleMenu() {
-        setIsMenu(!isMenu);
-    }
+    const [ isMenu, setIsMenu ] = useState(false);
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        setIsMenu(false);
+    }, [ pathname ]);
 
     function handleSearch(event) {
         if(event.key !== 'Enter') return;
@@ -21,12 +23,14 @@ export function Navigation({buttons: NavigationButtons}) {
 
         const message = event.target.value;
 
+        if(message == "") return;
+
         navigate('/search/' + message);
         queryClient.invalidateQueries('pagesSearch');
     }
     
     return (
-        <nav className={[styles.navigation, styles.container, isMenu ? styles.active : ""].join(' ')}>
+        <nav className={[ styles.navigation, markup.container, isMenu ? styles.active : "" ].join(' ')}>
             <div className={styles.logotype}>
                 <img src="/images/logo-white.svg" width={40}/>
             </div>
@@ -50,7 +54,7 @@ export function Navigation({buttons: NavigationButtons}) {
                 </div>
             </div>
 
-            <div className={styles.burger} onClick={toggleMenu}>
+            <div className={styles.burger} onClick={() => setIsMenu(!isMenu)}>
                 <img src="/images/icons/burger.webp" width={60}/>
             </div>
         </nav>

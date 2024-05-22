@@ -86,3 +86,6 @@ INSERT INTO `_categoriesToproducts` (`A`, `B`) VALUES
 (11, 19),
 (12, 19),
 (13, 19);
+
+INSERT INTO `users` (`id`, `email`, `login`, `password`, `role`, `avatar`, `bonus`, `created_at`, `updated_at`) VALUES
+(1, 'yagatov@vk.com', 'yagat', '123123Aa', 'ADMIN', NULL, 0, '2024-04-10 08:31:43.871', '2024-04-10 08:31:43.871');

@@ -1,5 +1,4 @@
-import { status } from "@prisma/client";
-import { ValidationError } from "../Errors.js";
+import { ServerError, ValidationError } from "../Errors.js";
 import AuthService from "../services/AuthService.js";
 
 import AuthValidator from "../validators/AuthValidator.js";
@@ -7,63 +6,45 @@ import AuthValidator from "../validators/AuthValidator.js";
 
 class AuthController {
     static async registration(req, res, next) {
-        const { validate, error: validateError } = await AuthValidator.registration(req);
+        console.log("[D?] AuthController.registration");
+        const validation = await AuthValidator.registration(req);
         
-        if(!validate) {
-            if(validateError.getMessage() == "Пользователь уже авторизован.") {
-                res.status(401).send({
-                    status: "OK",
-                    message: "Пользователь был уже авторизован",
-                    user: {
-                        login: req.session?.user?.login
-                    }
-                });
-                return;
-            }
-            return next(validateError);
+        if(validation) {
+            return next(validation);
         }
 
         const { email, login, password } = req.body;
 
-        const { client, error: resultError} = await AuthService.registration(email, login, password);
+        let result = {
+            message: 'Вы зарегистрировались',
+            user: {
+                login
+            }
+        };
 
-        if(resultError !== null) {
-            console.log(resultError)
-            return next(resultError);
+        let client = {}
+
+        try {
+            client = await AuthService.registration(email, login, password);
+        } catch(error) {
+            console.log('[error] Catching in AuthController.registration');
+            return next(new ServerError());
         }
-
         req.session.user = {
             id: client?.id,
             login,
             role: client?.role
-        }
+        };
 
-        res.send({
-            status: "OK",
-            message: "Успешная регистрация",
-            user: {
-                login
-            }
-        });
-        
+        res.send(result);
     }
 
     static async login(req, res, next) {
-        const { validate, error: validateError, client } = await AuthValidator.login(req);
+        console.log("[D?] AuthController.login");
+        const { validation, client } = await AuthValidator.login(req);
         
-        if(!validate) {
-            if(validateError.getMessage() == "Пользователь уже авторизован.") {
-                res.send({
-                    status: "OK",
-                    message: "Пользователь был уже авторизован",
-                    user: {
-                        login: req.session?.user?.login
-                    }
-                });
-                return;
-            }
-
-            return next(validateError);
+        if(validation) {
+            return next(validation);
         }
 
         const { login, password } = req.body;
@@ -79,8 +60,7 @@ class AuthController {
         }
 
         res.send({
-            status: "OK",
-            message: "Успешная авторизация",
+            message: "Вы авторизовались",
             user: {
                 login
             }
@@ -88,35 +68,36 @@ class AuthController {
     }
 
     static async logout(req, res, next) {
-        const { validate, error: validateError } = await AuthValidator.logout(req);
+        console.log("[D?] AuthController.logout");
+        const validation = await AuthValidator.logout(req);
         
-        if(!validate) {
-            return next(validateError);
+        if(validation) {
+            return next(validation);
         }
 
-        delete req.session?.user;
+        delete req.session.user;
 
         res.send({
-            status: "OK",
-            message: "Успешный выход"
-        })
-    }
+            message: "Вы вышли с аккаунта"
+        });
+    } 
 
     static async check(req, res, next) {
+        console.log("[D?] AuthController.check");
         if(req.session?.user == undefined) {
-            res.send({
-                status: "OK",
+            return res.send({
+                message: "Вы не авторизованы",
                 auth: false
             });
-        } else {
-            res.send({
-                status: "OK",
-                auth: true,
-                user: {
-                    login: req?.session?.user?.login
-                }
-            });
         }
+        
+        res.send({
+            message: "Вы авторизованы",
+            auth: true,
+            user: {
+                login: req.session.user.login
+            }
+        });
     }
 }
 

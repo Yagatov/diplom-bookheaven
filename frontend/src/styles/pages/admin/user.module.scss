@@ -1,0 +1,64 @@
+@import '../../variables';
+
+.title {
+    font-size: 1.8rem;
+    opacity: .8;
+    letter-spacing: 3px;
+    margin: 20px 0;
+}
+
+.info {
+    background-color: rgba($color: $color-white, $alpha: .01);
+    border: 1px solid rgba($color: $color-white, $alpha: .1);
+    border-radius: 10px;
+    padding: 20px;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    font-size: 14px;
+    color: rgba($color: $color-white, $alpha: .7);
+
+    span {
+        color: $color-white;
+
+    }
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-evenly;
+    margin: 10px 0;
+
+    .item {
+        background-color: rgba($color: $color-white, $alpha: .01);
+        border: 1px solid rgba($color: $color-white, $alpha: .1);
+        border-radius: 10px;
+        padding: 20px;
+        color: $color-white;
+        flex: 1;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        cursor: pointer;
+        user-select: none;
+
+        &.active {
+            background-color: rgba($color: $color-white, $alpha: .06);
+
+        }
+    }
+}

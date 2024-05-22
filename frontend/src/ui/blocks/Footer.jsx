@@ -1,11 +1,12 @@
-import styles from '#styles/landing/base.module.scss';
+import styles from '#styles/ui/footer.module.scss';
+import markup from '#styles/global/markup.module.scss';
 import { Link } from 'react-router-dom';
 
 export function Footer() {
     return (
         <footer className={styles.footer}>
             <div className={styles.box}>
-                <div className={styles.container}>
+                <div className={markup.container}>
                     <div className={styles.logotype}>
                         <img src="/images/logo-black.svg" width={75} />
                         <h3>Книжный<br/>рай</h3>

@@ -1,0 +1,4 @@
+{
+    "ignore": ["./sessions"],
+    "delay": "3"
+  }

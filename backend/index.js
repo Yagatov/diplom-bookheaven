@@ -8,5 +8,5 @@ const port = process.env.PORT || 3000;
 init(app);
 
 app.listen(port, () => {
-  console.log(`<*> Сервер запущен на порту ${port}`)
+  console.log(`[!] Сервер запущен на порту ${port}`)
 });

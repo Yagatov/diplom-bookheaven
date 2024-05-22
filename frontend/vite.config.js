@@ -8,8 +8,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      "#": "/src/",
       "#styles": "/src/styles",
       "#ui": "/src/ui",
+      "#atoms": "/src/atoms"
     }
   }
 })

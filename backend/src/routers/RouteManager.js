@@ -1,23 +1,33 @@
-import Router from "express";
+import { Router } from "express";
 
-import AuthRoutes from './AuthRoutes.js';
-import AccountRoutes from './AccountRoutes.js';
-import PagesRoutes from './PagesRoutes.js';
-import AdminRoutes from './AdminRoutes.js';
+import LandingRoutes from './routes/LandingRoutes.js';
+import AuthRoutes from './routes/AuthRoutes.js';
+import AccountRoutes from './routes/AccountRoutes.js';
+import AdminRoutes from './routes/AdminRoutes.js';
 
-function init(app) {
-    const apiRouter = Router();
+class RouteManager {
+    constructor(app, url) {
+        this.app = app;
+        this.router = Router();
+        this.list = [];
+        
+        this.app.use(url, this.router);
 
-    app.use('/api', apiRouter);
+        this._register();
+    }
 
-    registerRouters(apiRouter);
+    _register() {
+        this.list.push(
+            new LandingRoutes(this.router, '/pages'),
+            new AuthRoutes(this.router, '/auth'),
+            new AccountRoutes(this.router, '/account'),
+            new AdminRoutes(this.router, '/admin')
+        );
+    }
+
+    getCount() {
+        return this.list.length;
+    }
 }
 
-function registerRouters(router) {
-    router.use('/auth', AuthRoutes);
-    router.use('/account', AccountRoutes);
-    router.use('/pages', PagesRoutes);
-    router.use('/admin', AdminRoutes);
-}
-
-export default init;
+export default RouteManager;

@@ -1,0 +1,135 @@
+@import '../../variables';
+
+.box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.info {
+    margin-bottom: 20px;
+    font-size: 14px;
+
+    background-color: rgba($color: $color-white, $alpha: .01);
+    border: 1px solid rgba($color: $color-white, $alpha: .1);
+    border-radius: 10px;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .customer {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .bonus {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .field {
+            position: relative;
+
+            input {
+                width: 100%;
+                
+                background-color: rgba($color: $color-white, $alpha: .01);
+                border: 1px solid rgba($color: $color-white, $alpha: .1);
+                border-radius: 5px;
+                padding: 10px;
+                color: $color-white;
+            }
+
+            button {
+                background-color: #FAEDD9;
+                border-radius: 5px;
+                padding: 5px;
+                cursor: pointer;
+                font-weight: 500;
+
+                position: absolute;
+                top: 50%;
+                right: 8px;
+                transform: translateY(-50%);
+                font-size: 12px;
+            }
+        }
+
+        .message {
+            font-size: 10px;
+            opacity: .7;
+        }
+    }
+}
+
+.submit {
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #FAEDD9;
+    color: #000000;
+    cursor: pointer;
+    transition: .3s;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .bonus {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-left: 10px;
+        padding: 3px 5px;
+        border-radius: 10px;
+        background-color: #008040;
+        color: #ffffff;
+    }
+
+    &:hover {
+        opacity: .8;
+    }
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .ava {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #373635;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        img {
+            width: 110%;
+            height: 110%;
+        }
+    }
+
+    .user {
+        .nickname {
+            color: rgba(255, 255, 255, 0.80);
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 6px;
+        }
+
+        .email {
+            color: rgba(255, 255, 255, 0.40);
+            font-size: 12px;
+            font-weight: 500;
+        }
+    }
+}

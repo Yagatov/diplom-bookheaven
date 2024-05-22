@@ -1,0 +1,129 @@
+@import '../variables';
+
+.navigation {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+
+    position: relative;
+
+    .logotype {
+        opacity: .8;
+    }
+
+    .box {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .item {
+            font-size: 1.4rem;
+            font-weight: 400;
+            opacity: .8;
+        }
+    }
+
+    .search {
+        width: 250px;
+        height: 30px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        position: relative;
+
+        input {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            width: 80%;
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: .6;
+            color: inherit;
+        }
+
+        img {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+        }
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+        }
+    }
+
+    .burger {
+        cursor: pointer;
+        display: none;
+    }
+    
+    .burger:hover {
+        animation: rotate infinite 1s ease;
+    }
+    
+    @keyframes rotate {
+        from {
+            transform: rotate(0);
+        }
+    
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    &.active {
+        .box {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            transform: translateY(60%);
+            z-index: 100;
+            width: 100%;
+            left: 0;
+
+            background-color: $color-bg-black;
+            border-bottom: 1px solid $color-bg-white;
+            padding: 30px 0;
+        }
+
+        .links {
+            flex-direction: column;
+        }
+    }
+
+    @media screen and (max-width: 950px) {
+        .box {
+            display: none;
+        }
+
+        .burger {
+            display: block;
+        }
+    }
+}

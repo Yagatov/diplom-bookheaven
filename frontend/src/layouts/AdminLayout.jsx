@@ -1,10 +1,10 @@
-import styles from '#styles/landing/base.module.scss';
-import footerStyles from '#styles/account/base.module.scss';
+import markup from '#styles/global/markup.module.scss';
+import styles from '#styles/layouts/account.module.scss';
 
-import Request from '../Request.js';
+import Request from '#/Request.js';
 
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 
 import { useAtom } from 'jotai';
 import UserAtom from '../atoms/UserAtom.js';
@@ -18,6 +18,7 @@ export function AdminLayout() {
     const [ user, setUser ] = useAtom(UserAtom);
     
     const navigate = useNavigate();
+    const { pathname } = useLocation();
 
     useEffect(() => {
         if(user == null) {
@@ -25,27 +26,62 @@ export function AdminLayout() {
         }
     }, [])
 
+    let pages = {
+        "/admin/dashboard": {
+            sidebar: true,
+            name: "Главная"
+        },
+        "/admin/users": {
+            sidebar: true,
+            name: "Пользователи"
+        },
+        "/admin/messages": {
+            sidebar: true,
+            name: "Сообщения"
+        },
+        "/admin/orders": {
+            sidebar: true,
+            name: "Заказы"
+        },
+        "/admin/categories": {
+            sidebar: true,
+            name: "Категории"
+        },
+        "/admin/products": {
+            sidebar: true,
+            name: "Продукты"
+        },
+    };
+
     function getNavClass({ isActive }) {
-        return isActive ? [footerStyles.item, footerStyles.active].join(' ') : footerStyles.item;
+        return isActive ? [styles.item, styles.active].join(' ') : styles.item;
     }
 
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.content}>
+        <div className={markup.wrapper}>
+            <div className={markup.content}>
                 <Navigation buttons={<NavigationButtons user={user} setUser={setUser} navigate={navigate} />}/>
 
-                <div className={[styles.container, footerStyles.box].join(' ')}>
-                    <div className={footerStyles.sidebar}>
-                        <h4 className={footerStyles.title}>Панель админа</h4>
-                        <div className={footerStyles.list}>
-                            <NavLink to="/admin/dashboard" className={getNavClass}>Профиль</NavLink>
-                            <NavLink to="/admin/orders" className={getNavClass}>Заказы</NavLink>
-                            <NavLink to="/admin/categories" className={getNavClass}>Категории</NavLink>
-                            <NavLink to="/admin/products" className={getNavClass}>Продукты</NavLink>
+                <div className={[markup.container, styles.box].join(' ')}>
+                    <div className={styles.sidebar}>
+                        <h4 className={styles.title}>Панель админа</h4>
+                        <div className={styles.list}>
+                            {
+                                Object.entries(pages).map(([ key, value ]) => {
+                                    if(value.sidebar) return (
+                                        <NavLink key={"account.sidebar." + key} to={ key } className={getNavClass}>{ value.name }</NavLink>
+                                    )
+                                })
+                            }
                         </div>
                     </div>
 
-                    <Outlet />
+                    <div className={styles.content}>
+                        <div className={styles.title}>{ pages[pathname]?.name }</div>
+                        <div className={styles.wrapper}>
+                            <Outlet />
+                        </div>
+                    </div>
                 </div>
             </div>
 

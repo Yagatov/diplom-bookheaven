@@ -1,6 +1,25 @@
 import { client } from "../Database.js";
+import AccountService from "./AccountService.js";
 
 class ShopService {
+    static async getDataDashboard() {
+        const [orders, users, products, categories, messages] = await client.$transaction([
+            client.orders.count(),
+            client.users.count(),
+            client.products.count(),
+            client.categories.count(),
+            client.messages.count()
+        ]);
+
+        return [
+            { name: "Заказы", count: orders },
+            { name: "Пользователи", count: users },
+            { name: "Товары", count: products },
+            { name: "Категории", count: categories },
+            { name: "Сообщения", count: messages },
+        ];
+    }
+
     static async getNavigationCategories(limit, select = { id: true, name: true }) {
         const result = await client.categories.findMany({
             where: {
@@ -31,7 +50,8 @@ class ShopService {
                         name: true,
                         image: true,
                         author: true,
-                        price: true
+                        price: true,
+                        bonus: true
                     }
                 }
             }
@@ -130,7 +150,8 @@ class ShopService {
                         name: true,
                         image: true,
                         author: true,
-                        price: true
+                        price: true,
+                        bonus: true
                     }
                 }
             }
@@ -138,13 +159,14 @@ class ShopService {
         return result;
     }
 
-    static async createProduct(name, author, image, price, status) {
+    static async createProduct(name, author, image, price, bonus, status) {
         const result = await client.products.create({
             data: {
                 name,
                 author,
                 image,
                 price,
+                bonus,
                 description: '-',
                 status: status ? "ACTIVE" : "DISABLED"
             }
@@ -160,7 +182,7 @@ class ShopService {
         });
     }
 
-    static async updateProduct(id, name, author, image, price, status, categories) {
+    static async updateProduct(id, name, author, image, price, bonus, status, categories) {
         const connects = categories.map(item => {
             return { id: item }
         })
@@ -174,6 +196,7 @@ class ShopService {
                 author,
                 image,
                 price,
+                bonus,
                 status,
                 categories: {
                     set: connects
@@ -236,10 +259,11 @@ class ShopService {
         return cart;
     }
 
-    static async removeProductFromCart(cart_id) {
-        const existingCart = await client.carts.findUnique({
+    static async removeProductFromCart(user_id, product_id) {
+        const existingCart = await client.carts.findFirst({
             where: {
-                id: cart_id
+                user_id,
+                product_id
             }
         });
 
@@ -251,13 +275,13 @@ class ShopService {
             if(existingCart.quantity === 1) {
                 await client.carts.delete({
                     where: {
-                        id: cart_id
+                        id: existingCart.id
                     }
                 });
             } else {
                 cart = await client.carts.update({
                     where: {
-                        id: cart_id
+                        id: existingCart.id
                     },
                     data: {
                         quantity: {
@@ -273,6 +297,15 @@ class ShopService {
         return cart;
     }
 
+    static async deleteProductFromCart(user_id, product_id) {
+        await client.carts.deleteMany({
+            where: {
+                user_id,
+                product_id
+            }
+        });
+    }
+
     static async deleteCart(user_id) {
         await client.carts.deleteMany({
             where: {
@@ -282,7 +315,14 @@ class ShopService {
     }
 
     static async getAllOrders() {
-        const result = await client.orders.findMany();
+        const result = await client.orders.findMany({
+            include: {
+                user: true
+            },
+            orderBy: {
+                id: "desc"
+            }
+        });
         return result;
     }
 
@@ -295,11 +335,78 @@ class ShopService {
         return result;
     }
 
+    static async getOrder(id) {
+        const result = await client.orders.findUnique({
+            where: { id },
+            include: {
+                orderItems: {
+                    include: {
+                        product: true
+                    }
+                },
+                user: true
+            }
+        });
+        return result;
+    }
+
     static async createOrder(user_id, price) {
         const result = await client.orders.create({
             data: {
                 user_id,
                 price
+            }
+        });
+        return result;
+    }
+
+    static async setOrderStatus(id, status) {
+        const result = await client.orders.update({
+            where: { id },
+            data: { status },
+            include: {
+                user: true
+            }
+        });
+
+        return result;
+    }
+
+    static async giveOrderBonus(order_id, user_id, bonus) {
+        await AccountService.updateBonus(user_id, bonus);
+        const result = await client.orders.update({
+            where: { id: order_id },
+            data: { bonus_completed: true }
+        });
+
+        return result;
+    }
+
+    static async getAllUsers() {
+        const result = await client.users.findMany();
+        return result;
+    }
+
+    static async getUser(id) {
+        const result = await client.users.findUnique({
+            where: { id }
+        });
+        return result;
+    }
+
+    static async setUserRole(id, role) {
+        const result = await client.users.update({
+            where: { id },
+            data: { role }
+        });
+
+        return result;
+    }
+
+    static async getAllMessages() {
+        const result = await client.messages.findMany({
+            include: {
+                user: true
             }
         });
         return result;

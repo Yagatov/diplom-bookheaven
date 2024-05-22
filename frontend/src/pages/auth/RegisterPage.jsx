@@ -1,4 +1,4 @@
-import styles from '#styles/auth/dynamic.module.scss';
+import styles from '#styles/pages/auth/dynamic.module.scss';
 
 import Request from '../../Request.js';
 

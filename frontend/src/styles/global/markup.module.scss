@@ -1,0 +1,23 @@
+@import '../variables';
+
+.container {
+    max-width: $size-container-max;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: $size-container-padding;
+    padding-right: $size-container-padding;
+}
+
+.wrapper {
+    min-height: 100vh;
+
+    background-color: $color-bg-black;
+    color: $color-white;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 0 auto;
+}

@@ -23,8 +23,8 @@ model users {
   avatar      String?
   bonus       Int           @default(0)
   orders      orders[]
-  carts       carts[]       
-  favorits    favorites[]   
+  carts       carts[]  
+  messages    messages[]     
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
 }
@@ -35,16 +35,17 @@ enum role {
 }
 
 model products {
-  id          Int       @id   @default(autoincrement())
+  id          Int           @id   @default(autoincrement())
   status      status
   name        String
   description String
   image       String
   author      String
   price       Float
+  bonus       Int           @default(0)
   categories  categories[]    
   carts       carts[]
-  favorites   favorites[]
+  orderItems  orderItems[]
 }
 
 model categories {
@@ -70,20 +71,34 @@ model carts {
   quantity    Int
 }
 
-model favorites {
-  id          Int       @id @default(autoincrement())
-  user_id     Int
-  user        users     @relation(fields: [user_id], references: [id])
+model orders {
+  id              Int           @id   @default(autoincrement())
+  user_id         Int
+  user            users         @relation(fields: [user_id], references: [id])
+  price           Int
+  bonus_take      Int           @default(0)
+  bonus_give      Int           @default(0)
+  bonus_completed Boolean       @default(false)
+  status          String        @default("process")
+  orderItems      orderItems[]
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+}
+
+model orderItems {
+  id          Int           @id   @default(autoincrement())
+  order_id    Int
+  orders      orders        @relation(fields: [order_id], references: [id])
   product_id  Int
   product     products  @relation(fields: [product_id], references: [id])
   quantity    Int
 }
 
-model orders {
-  id          Int       @id   @default(autoincrement())
+model messages {
+  id          Int           @id   @default(autoincrement())
   user_id     Int
-  price       Int
-  user        users     @relation(fields: [user_id], references: [id])
+  user        users         @relation(fields: [user_id], references: [id])
+  topic       String
+  message     String
   created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
 }

@@ -2,12 +2,19 @@
     "compilerOptions": {
         "baseUrl": "src",
         "paths": {
+            "#/*": [
+                "*"
+            ],
             "#styles/*": [
                 "styles/*"
             ],
             "#ui/*": [
                 "ui/*",
                 "ui/*.jsx"
+            ],
+            "#atoms/*": [
+                "atoms/*",
+                "atoms/*.jsx"
             ]
         }
     }

@@ -1,13 +1,14 @@
 import carts from '#styles/ui/carts.module.scss';
-import { Link } from 'react-router-dom';
 
-import Request from '../../Request.js';
+import { useState } from 'react';
 
+import Request from '#/Request.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useAtom } from 'jotai'
-import UserAtom from '../../atoms/UserAtom.js';
-import { useState } from 'react';
+import UserAtom from '#atoms/UserAtom.js';
+
+import { Link } from 'react-router-dom';
 
 export function CartItem({cart}) {
     const [user, setUser] = useAtom(UserAtom);
@@ -15,11 +16,11 @@ export function CartItem({cart}) {
 
     const mutation = useMutation({
         mutationFn: (data) => {
-            return Request.post('/api/account/basket/product', data)
+            return Request.post('/api/account/cart/product', data)
         },
         onSuccess: (data) => {
             if(data.data?.quantity) {
-                setText("В корзине " + data.data?.quantity)
+                setText("В корзине " + data.data?.quantity + " шт.")
             }
         }
     })
@@ -41,19 +42,15 @@ export function CartItem({cart}) {
             <div className={carts.image}>
                 <img src={Request.getUri() + "/public/images/products/" + cart.image}/>
             </div>
-            <div className={carts.info}>
+            <Link className={carts.info} to={"/product/" + cart.id}>
                 <div className={carts.price}>{cart.price} ₽</div>
                 <div className={carts.name}>{cart.name}</div>
                 <div className={carts.author}>{cart.author}</div>
-            </div>
+            </Link>
             <div className={carts.action}>
-                {
-                    !mutation.isPending && (
-                        <div className={carts.to} onClick={handleClick}>
-                            { text }
-                        </div>
-                    )
-                }
+                <button className={carts.to} onClick={handleClick} disabled={ mutation.isPending }>
+                    { mutation.isPending ? "Загрузка" : text }
+                </button>
             </div>
         </div>
     )
@@ -63,11 +60,11 @@ export function BasketItem({item}) {
     const cart = item?.product;
     const queryClient = useQueryClient();
 
-    const [text, setText] = useState(item.quantity);
+    const [ text, setText ] = useState(item.quantity);
 
     const mutation = useMutation({
         mutationFn: (data) => {
-            return Request.post('/api/account/basket/product', data)
+            return Request.post('/api/account/cart/product', data)
         },
         onSuccess: (data) => {
             if(data.data?.quantity) {
@@ -79,14 +76,12 @@ export function BasketItem({item}) {
 
     const removeMutation = useMutation({
         mutationFn: () => {
-            return Request.delete('/api/account/basket/product/' + item.id)
+            return Request.delete('/api/account/cart/product/' + item.id)
         },
         onSuccess: (data) => {
-            if(data.data?.quantity !== undefined) {
+            if(data.data?.quantity) {
                 setText(data.data?.quantity);
                 queryClient.invalidateQueries('accountProfile');
-                // if(data.data.quantity === 0) {
-                // }
             }
         }
     })
@@ -102,32 +97,30 @@ export function BasketItem({item}) {
             <div className={carts.image}>
                 <img src={Request.getUri() + "/public/images/products/" + cart.image}/>
             </div>
-            <div className={carts.info}>
+            <Link className={carts.info} to={"/product/" + cart.id}>
                 <div className={carts.price}>{cart.price} ₽</div>
                 <div className={carts.name}>{cart.name}</div>
                 <div className={carts.author}>{cart.author}</div>
-            </div>
+            </Link>
             <div className={carts.action}>
-                {
-                    !mutation.isPending && (
-                        <>
-                            <div className={carts.to} onClick={() => removeMutation.mutate()}>
-                                Убрать
-                            </div>
-                            <div style={{
-                                fontSize: 14,
-                                padding: "5px 7px",
-                                border: "1px solid rgba(255, 255, 255, .3)",
-                                borderRadius: 5
-                            }}>
-                                { text }
-                            </div>
-                            <div className={carts.to} onClick={handleClick}>
-                                Добавить
-                            </div>
-                        </>
-                    )
-                }
+                <div className={carts.to} onClick={() => removeMutation.mutate()} disabled={removeMutation.isLoading}>
+                    {
+                        removeMutation.isLoading ? "Загрузка" : "Убрать"
+                    }
+                </div>
+                <div style={{
+                    fontSize: 14,
+                    padding: "5px 7px",
+                    border: "1px solid rgba(255, 255, 255, .3)",
+                    borderRadius: 5
+                }}>
+                    { text }
+                </div>
+                <div className={carts.to} onClick={handleClick} disabled={mutation.isLoading}>
+                    {
+                        mutation.isLoading ? "Загрузка" : "Добавить"
+                    }
+                </div>
             </div>
             <div style={{
                 textAlign: "center",

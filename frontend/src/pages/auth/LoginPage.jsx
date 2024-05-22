@@ -1,6 +1,6 @@
-import styles from '#styles/auth/dynamic.module.scss';
+import styles from '#styles/pages/auth/dynamic.module.scss';
 
-import Request from '../../Request.js';
+import Request from '#/Request.js';
 
 import { useMutation } from '@tanstack/react-query';
 
@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAtom } from 'jotai'
-import UserAtom from '../../atoms/UserAtom.js';
+import UserAtom from '#atoms/UserAtom.js';
 
 export function LoginPage() {
     const {
@@ -23,7 +23,7 @@ export function LoginPage() {
 
     const mutation = useMutation({
         mutationFn: (data) => {
-            return Request.post('http://localhost:3000/api/auth/login', data)
+            return Request.post('/api/auth/login', data)
         },
         onSuccess: (data) => {
             const userData = data?.data?.user;
@@ -32,6 +32,14 @@ export function LoginPage() {
 
             navigate('/account');
         },
+        onError: (data) => {
+            const errorFields = data.response.data?.error?.fields;
+            
+            if(errorFields != undefined) {
+                setUser(errorFields?.user.login);
+                navigate('/account');
+            }
+        }
     })
 
     const loginPattern = /^[a-zA-Z0-9_]{4,20}$/;

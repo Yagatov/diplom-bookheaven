@@ -1,4 +1,4 @@
-import styles from '#styles/auth/base.module.scss';
+import styles from '#styles/layouts/auth.module.scss';
 
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ export function AuthLayout() {
         if(user != null) {
             navigate('/account');
         }
-    }, []);
+    });
 
     return (
         <div className={styles.wrapper}>

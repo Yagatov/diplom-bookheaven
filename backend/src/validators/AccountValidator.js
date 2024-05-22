@@ -17,7 +17,7 @@ class AccountValidator {
             return validation;
         }
 
-        if(isAdmin && request?.session?.user?.role != "ADMIN") {
+        if(isAdmin && request.session.user?.role != "ADMIN") {
             validation.validate = false;
             validation.error = new ValidationError(403, "Нет прав.");
             return validation;

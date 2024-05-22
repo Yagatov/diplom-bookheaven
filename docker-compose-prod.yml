@@ -1,0 +1,46 @@
+services:
+  backend:
+    image: 'node:21.2.0'
+    container_name: 'book-backend'
+    working_dir: '/app'
+    volumes:
+      - './backend:/app'
+    networks:
+      - 'traefik-shared'
+      - 'database-shared'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.book-backend.rule=Host("book.polwin.ru") && (PathPrefix(`/api`) || PathPrefix(`/public`))'
+      - 'traefik.http.routers.book-backend.entrypoints=websecure'
+      - 'traefik.http.routers.book-backend.service=book-backend'
+      - 'traefik.http.services.book-backend.loadbalancer.server.port=3000'
+    command: [
+      'bash', '-c', 
+      'npm install && npm start'
+    ]
+  frontend:
+    image: 'node:21.2.0'
+    container_name: 'book-frontend'
+    working_dir: '/app'
+    volumes:
+      - './frontend:/app'
+    networks:
+      - 'traefik-shared'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.book-frontend.rule=Host("book.polwin.ru")'
+      - 'traefik.http.routers.book-frontend.entrypoints=websecure'
+      - 'traefik.http.routers.book-frontend.service=book-frontend'
+      - 'traefik.http.services.book-frontend.loadbalancer.server.port=4000'
+    command: [
+      'bash', '-c', 
+      'npm install && npm run build && npm run preview'
+    ]
+
+networks:
+  traefik-shared:
+    name: traefik-shared
+    external: true
+  database-shared:
+    name: database-shared
+    external: true

@@ -1,0 +1,80 @@
+.title {
+    font-size: 18px;
+    opacity: .8;
+    text-align: center;
+}
+
+.category {
+    font-size: 12px;
+    color: rgba($color: #ffffff, $alpha: .8);
+    font-weight: 400;
+
+    a {
+        margin: 0 10px;
+        color: rgba($color: #ffffff, $alpha: 1);
+    }
+}
+
+.product {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 50px;
+
+    .main {
+        height: 100%;
+        max-width: 500px;
+    }
+
+    & > img {
+        width: 300px;
+    }
+
+    .name {
+        font-size: 18px;
+        margin: 30px 0 5px;
+    }
+
+    .author {
+        margin-bottom: 20px;
+        font-size: 12px;
+        opacity: .7;
+    }
+
+    .price {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .bonus {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-left: 10px;
+            padding: 3px 5px;
+            border-radius: 10px;
+            background-color: #008040;
+        }
+    }
+
+    .description {
+        max-width: 500px;
+        font-size: 14px;
+        line-height: 1.4;
+        opacity: .8;
+    }
+}
+
+.button {
+    color: #ffffff;
+    background-color: rgba($color: #ffffff, $alpha: .07);
+    padding: 15px 40px;
+    border-radius: 10px;
+    margin-top: 50px;   
+    cursor: pointer;
+    transition: .3s ease;
+
+    &:hover {
+        background-color: rgba($color: #ffffff, $alpha: .1);
+    }
+}

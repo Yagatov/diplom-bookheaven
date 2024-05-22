@@ -1,0 +1,17 @@
+.box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.item {
+    padding: 10px 20px;
+    background-color: rgba($color: #ffffff, $alpha: .03);
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}

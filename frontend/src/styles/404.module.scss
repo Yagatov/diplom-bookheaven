@@ -1,0 +1,35 @@
+.wrapper {
+    height: 100vh;
+    width: 100%;
+    background-color: #222222;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 20%;
+}
+
+.title {
+    font-size: 24px;
+}
+
+.subtitle {
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.action {
+    font-size: 16px;
+    color: #ffffff;
+    background-color: rgba($color: #ffffff, $alpha: .07);
+    padding: 15px 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .3s ease;
+
+    &:hover {
+        background-color: rgba($color: #ffffff, $alpha: .1);
+    }
+}

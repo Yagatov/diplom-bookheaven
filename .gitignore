@@ -1,11 +1,13 @@
-# node packages
+# frontend
 /frontend/node_modules
+/frontend/dist
+
+# backend
 /backend/node_modules
-
-# mysql base
-/data
-
 /backend/prisma/migrations
-
-# secret
 /backend/.env
+/backend/sessions
+
+# other
+/bookdatabase
+

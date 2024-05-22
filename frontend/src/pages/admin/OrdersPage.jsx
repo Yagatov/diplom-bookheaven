@@ -1,7 +1,10 @@
-import pages from '#styles/account/pages.module.scss';
+import styles from '#styles/pages/admin/orders.module.scss';
 
-import Request from '../../Request.js';
+import Loader from '#/ui/Loader';
+
+import Request from '#/Request.js';
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom';
 
 export function OrdersPage() {
 
@@ -12,50 +15,21 @@ export function OrdersPage() {
         }
     });
 
-    return (
-        <div className={pages.content}>
-            {
-                query.isPending && (
-                    <h2 className={pages.title}>Загрузка...</h2>
-                )
-            }
-            {
-                query.isError && (
-                    <h2 className={pages.title}>Ошибка.</h2>
-                )
-            }
-            {
-                query.isSuccess && (
-                    <h2 className={pages.title}>Заказы</h2>
-                )
-            }
+    if(query.isPending) return ( <Loader /> );
+    if(query.isError) return ( <h3>Ошибка сервера</h3> );
 
-            <div className={pages.box}>
-            <div style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 20
-                }}>
+    return (
+        <>
+            <div className={styles.box}>
                     {query.data?.data?.map(item => {
                         return (
-                            <div key={"account.order." + item.id} style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                gap: 30,
-                                backgroundColor: "rgba(255, 255, 255, .03)",
-                                borderRadius: 10,
-                                padding: "10px 20px",
-                                fontSize: 12
-                            }}>
-                                <p>Заказ от { item.created_at }</p>    
-                                <p>Сумма заказа { item.price } рублей</p> 
-                                <p>Пользователь { item.user_id }</p> 
-                            </div>
+                            <Link to={"/admin/order/" + item.id} key={"admin.order." + item.id} className={styles.item}>
+                                <p>Заказ №{ item.id } на { item.price } рублей от { item.user.login }</p>
+                                <p>{item.status}</p>
+                            </Link>
                         )
                     })}
-                </div>
             </div>
-        </div>
+        </>
     )
 }

@@ -2,6 +2,23 @@ import ShopService from "../services/ShopService.js";
 import AccountValidator from "../validators/AccountValidator.js";
 
 class AdminController {
+    static async dashboard(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        try {
+            const result = await ShopService.getDataDashboard();
+
+            res.send(result);
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
+        }
+    }
+
     static async categories(req, res, next) {
         const auth = AccountValidator.isAuth(req, true);
     
@@ -16,9 +33,8 @@ class AdminController {
                 categories: result
             })
         } catch(error) {
-            res.status(500).send({
-                message: 'error'
-            })
+            console.log(error);
+            return next(new ServerError());
         }
     }
 
@@ -36,9 +52,7 @@ class AdminController {
                 message: "OK"
             })
         } catch(error) {
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -57,9 +71,7 @@ class AdminController {
             })
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -78,9 +90,7 @@ class AdminController {
             })
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -100,9 +110,7 @@ class AdminController {
             })
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
     
@@ -120,9 +128,7 @@ class AdminController {
                 products: result
             })
         } catch(error) {
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -134,16 +140,12 @@ class AdminController {
         }
 
         try {
-            await ShopService.createProduct(req.body?.name, req.body?.author, req.body?.image, parseFloat(req.body?.price), req.body?.status);
+            await ShopService.createProduct(req.body?.name, req.body?.author, req.body?.image, parseFloat(req.body?.price), parseInt(req.body?.bonus), req.body?.status);
 
-            res.send({
-                message: "OK"
-            })
+            res.send()
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -162,9 +164,7 @@ class AdminController {
             })
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -183,9 +183,7 @@ class AdminController {
             })
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
         }
     }
 
@@ -196,18 +194,16 @@ class AdminController {
             return next(auth.error);
         }
 
-        const { name, author, image, price, status, categories } = req.body;
+        const { name, author, image, price, bonus, status, categories } = req.body;
         try {
-            await ShopService.updateProduct(Number(req.params.id), name, author, image, parseFloat(price), status, categories);
+            await ShopService.updateProduct(Number(req.params.id), name, author, image, parseFloat(price), parseInt(bonus), status, categories);
 
             res.send({
                 message: "OK"
             })
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError()); 
         }
     }
 
@@ -224,9 +220,124 @@ class AdminController {
             res.send(result)
         } catch(error) {
             console.log(error);
-            res.status(500).send({
-                message: 'error'
-            })
+            return next(new ServerError());
+        }
+    }
+
+    static async order(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        const order_id = Number(req.params?.id);
+
+        try {
+            const result = await ShopService.getOrder(order_id);
+
+            res.send(result)
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
+        }
+    }
+
+    static async orderStatus(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        const order_id = Number(req.params?.id);
+        const { status } = req.body;
+
+        try {
+            const result = await ShopService.setOrderStatus(order_id, status);
+
+            if(!result.bonus_completed && result.bonus_give != 0 && result.status == 'completed') {
+                await ShopService.giveOrderBonus(order_id, result.user_id, result.user.bonus + result.bonus_give)
+                console.log(true);
+            }
+
+            res.send(result);
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
+        }
+    }
+
+    static async users(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        try {
+            const result = await ShopService.getAllUsers();
+
+            res.send(result)
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
+        }
+    }
+
+    static async user(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        const user_id = Number(req.params?.id);
+
+        try {
+            const result = await ShopService.getUser(user_id);
+
+            res.send(result)
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
+        }
+    }
+
+    static async userRole(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        const user_id = Number(req.params?.id);
+        const { role } = req.body;
+
+        try {
+            const result = await ShopService.setUserRole(user_id, role);
+
+            res.send(result);
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
+        }
+    }
+
+    static async messages(req, res, next) {
+        const auth = AccountValidator.isAuth(req, true);
+    
+        if(!auth.validate) {
+            return next(auth.error);
+        }
+
+        try {
+            const result = await ShopService.getAllMessages();
+
+            res.send(result)
+        } catch(error) {
+            console.log(error);
+            return next(new ServerError());
         }
     }
 }

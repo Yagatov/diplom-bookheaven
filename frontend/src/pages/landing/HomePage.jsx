@@ -1,82 +1,48 @@
-import markup from '#styles/landing/markup.module.scss';
-import styles from '#styles/landing/pages/home.module.scss';
-import carts from '#styles/ui/carts.module.scss';
+import markup from '#styles/global/markup.module.scss';
+import styles from '#styles/pages/landing/home.module.scss';
 
+import Loader from '#/ui/Loader';
+import Slider from '#/ui/Slider';
+import SetList from '#/ui/shop/SetList';
+
+import Request from '#/Request.js';
+
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Slider } from '#ui/landing/Slider';
-import { CartItem } from '#ui/carts/CartItem';
 
-import Request from '../../Request.js';
-
-import { useQuery } from '@tanstack/react-query'
-
-export function HomePage() {
-    const { isPending, isSuccess, isError, data, error } = useQuery({
+export default () => {
+    const { isPending, isError, data } = useQuery({
         queryKey: ['pagesHome'],
         queryFn: () => {
             return Request.get("/api/pages/home");
         }
     });
 
-    const styleTitle = {
-        fontSize: 20,
-        textAlign: "center",
-        margin: 40
-    }
+    if(isPending) return ( <Loader /> );
+
+    if(isError) return (
+        <div className={markup.container}>
+            <h2>Ошибка сервера</h2>
+        </div>
+    )
 
     return (
         <div className={markup.container}>
-            {
-                isPending && (<h2 style={styleTitle}>Загрузка...</h2>)
-            }
-            {
-                isError && (<h2 style={styleTitle}>Ошибка сервера</h2>)
-            }
-            {
-                isSuccess && (
-                    <>
-                    <div className={styles.category}>
-                        {
-                            data.data?.categories?.navigation?.map && data.data?.categories?.navigation?.map(item => {
-                                // item: id, name
-                                return (
-                                    <Link key={item.id} className={styles.item} to={"/category/" + item.id}>{item.name}</Link>
-                                )
-                            })
-                        }
-                    </div>
-
-                    <Slider />
-
-                    {
-                        data.data?.sets?.map && data.data?.sets?.map(item => {
-                            // item: id, name, products
-                            return (
-                                <CartList key={item.id + "." + item.name} item={item}/>
-                            )
-                        })
-                    }
-
-                    
-                    {/* <CartList title="Осенние премьеры" cartList={cartsStore}/>
-                    <CartList title="Книги: новинки 2024" cartList={cartsStore}/> */}
-                    </>
-                )
-            }
-            
-        </div>
-    )
-}
-
-function CartList({item}) {
-    return (
-        <div className={carts.set}>
-            <Link to={"/category/" + item.id} className={carts.title}>{item.name}</Link>
-            <div className={carts.list} style={{marginTop: 20}}>
-                {item.products.map(item => (
-                    <CartItem key={item.id + "." + item.name} cart={item}/>
-                ))}
+            <div className={styles.category}>
+                {
+                    data.data.categories.navigation?.map(item => (
+                        <Link key={"landing.home.navigation." + item.id} className={ styles.item } to={ "/category/" + item.id }>{ item.name }</Link>
+                    ))
+                }
             </div>
+
+            <Slider />
+
+            {
+                data.data.sets?.map(item => (
+                    <SetList key={"landing.home.set" + item.id} item={ item }/>
+                ))
+            }
         </div>
     )
 }

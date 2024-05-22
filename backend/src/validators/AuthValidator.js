@@ -1,4 +1,4 @@
-import { ValidationError } from "../Errors.js";
+import { BadRequestError, ForbiddenError, UnauthorizedError, ValidationError } from "../Errors.js";
 import AccountService from "../services/AccountService.js";
 import { isProps } from "../utils/ValidationUtils.js";
 
@@ -10,110 +10,101 @@ const patterns = {
 
 class AuthValidator {
     static async registration(request) {
-        const validation = {
-            validate: true,
-            error: null
-        }
-
         if(request.session?.user) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Пользователь уже авторизован.");
-            return validation;
+            return new ValidationError(400, "Вы уже авторизованы.", {
+                user: {
+                    login: request.session?.user?.login
+                }
+            });
         }
 
         if(!isProps(request.body, ["email", "login", "password"])) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Не указаны все поля.");
-            return validation;
+            return new BadRequestError(400, "Не указаны все поля.");
         }
 
         const { email, login, password } = request.body;
 
         if(!email.match(patterns.email)) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Поле 'email' не прошёл валидацию.");
-            return validation;
+            return new ValidationError(400, "Поле 'email' не прошёл валидацию.");
         }
 
         if(!login.match(patterns.login)) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Поле 'login' не прошёл валидацию.");
-            return validation;
+            return new ValidationError(400, "Поле 'login' не прошёл валидацию.");
         }
 
         if(!password.match(patterns.password)) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Поле 'password' не прошёл валидацию.");
-            return validation;
+            return new ValidationError(400, "Поле 'password' не прошёл валидацию.");
         }
 
         if(await AccountService.getUserByLogin(login) != null) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Пользователь уже зарегистрирован.");
-            return validation;
+            return new ValidationError(400, "Пользователь уже зарегистрирован.");
         }
 
-        return validation;
+        return null;
     }
 
     static async login(request) {
-        const validation = {
-            validate: true,
-            error: null
+        let result = {
+            validation: null,
+            client: null
+        };
+        
+        if(request.session?.user) {
+            result.validation = new ValidationError(400, "Вы уже авторизованы.", {
+                user: {
+                    login: request.session?.user?.login
+                }
+            });
+            return result;
         }
-
-        if(request.session?.user != undefined) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Пользователь уже авторизован.");
-            return validation;
-        }
-
 
         if(!isProps(request.body, ["login", "password"])) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Не указаны все поля.");
-            return validation;
+            result.validation = new BadRequestError(400, "Не указаны все поля.");
+            return result;
         }
         
         const { login, password } = request.body;
 
         if(!login.match(patterns.login)) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Поле 'login' не прошёл валидацию.");
-            return validation;
+            result.validation = new ValidationError(400, "Поле 'login' не прошёл валидацию.");
+            return result;
         }
 
         if(!password.match(patterns.password)) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Поле 'password' не прошёл валидацию.");
-            return validation;
+            result.validation = new ValidationError(400, "Поле 'password' не прошёл валидацию.");
+            return result;
         }
 
-        const result = await AccountService.getUserByLogin(login);
+        const client = await AccountService.getUserByLogin(login);
 
-        if(result == null) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Пользователь не зарегистрирован.");
-            return validation;
+        if(client == null) {
+            result.validation = new ValidationError(400, "Пользователь не зарегистрирован.");
+            return result;
         }
+        
+        result.client = client;
 
-        validation.client = result;
-        return validation;
+        return result;
     }
 
-    static async logout(request) {
-        const validation = {
-            validate: true,
-            error: null
-        }
-
+    static logout(request) {
         if(request.session?.user == undefined) {
-            validation.validate = false;
-            validation.error = new ValidationError(401, "Пользователь не авторизован.");
-            return validation;
+            return new UnauthorizedError();;
         }
 
-        return validation;
+        return null;
+    }
+
+    static check(request, isAdmin = false) {
+        if(request.session?.user === undefined) {
+            return new UnauthorizedError();
+        }
+
+        if(isAdmin && request.session.user.role !== "ADMIN") {
+            return new ForbiddenError();
+        }
+
+        return null;
     }
 }
 

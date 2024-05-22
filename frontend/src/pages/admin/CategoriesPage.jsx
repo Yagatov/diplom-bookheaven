@@ -1,8 +1,9 @@
-import pages from '#styles/account/pages.module.scss';
-import styles from '#styles/admin/pages/categories.module.scss';
-import settings from '#styles/account/pages/settings.module.scss';
+import styles from '#styles/pages/admin/categories.module.scss';
+import settings from '#styles/pages/account/settings.module.scss';
 
-import Request from '../../Request.js';
+import Loader from '#/ui/Loader';
+
+import Request from '#/Request.js';
 import { useForm } from 'react-hook-form';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -30,84 +31,83 @@ export function CategoriesPage() {
 
     const createForm = useForm();
 
+    if(query.isPending) return ( <Loader /> );
+    if(query.isError) return ( <h3 className={settings.title}>Ошибка сервера</h3> );
+
     return (
-        <div className={pages.content}>
-            <h2 className={pages.title}>Категории</h2>
+        <>
+            {
+                (createMutation.isError) && (
+                    <div className={[settings.notification, settings.error].join(' ')}>Ошибка</div>
+                )
+            }
+            {
+                createMutation.isSuccess && (
+                    <div className={[settings.notification, settings.success].join(' ')}>Создано</div>
+                )
+            }
+            
+            {
+                createMutation.isPending ? (
+                    <Loader />
+                ) : (
+                    <form onSubmit={createForm.handleSubmit(createMutation.mutate)} className={settings.form} style={{
+                        border: "1px solid rgba(255, 255, 255, .3)",
+                        padding: 30,
+                        borderRadius: 10
+                    }}>
+                        <label className={settings.labelInput}>
+                            Название
+                            <input
+                                placeholder="Введите название"
+                                {...createForm.register("name", {
+                                    required: "Обязательное поле"
+                                })}
+                            />
+                            <p className={settings.error}>{createForm.formState.errors.name?.message}</p>
+                        </label>
 
-            <div className={pages.box}>
-                {
-                    (createMutation.isError || query.isError) && (
-                        <div className={[settings.notification, settings.error].join(' ')}>Ошибка</div>
-                    )
-                }
-                {
-                    createMutation.isSuccess && (
-                        <div className={[settings.notification, settings.success].join(' ')}>Создано</div>
-                    )
-                }
-                
-                {
-                    createMutation.isPending && query.isPending ? (
-                        <h3 className={settings.title}>Загрузка....</h3>
-                    ) : (
-                        <form onSubmit={createForm.handleSubmit(createMutation.mutate)} className={settings.form} style={{
-                            border: "1px solid rgba(255, 255, 255, .3)",
-                            padding: 30,
-                            borderRadius: 10
-                        }}>
-                            <label className={settings.labelInput}>
-                                Название
-                                <input
-                                    placeholder="Введите название"
-                                    {...createForm.register("name", {
-                                        required: "Обязательное поле"
-                                    })}
-                                />
-                                <p className={settings.error}>{createForm.formState.errors.name?.message}</p>
-                            </label>
+                        <label className={styles.checkbox}>
+                            <input type="checkbox" {...createForm.register("navigation")}/>
+                            В навигации
+                        </label>
 
-                            <label className={styles.checkbox}>
-                                <input type="checkbox" {...createForm.register("navigation")}/>
-                                В навигации
-                            </label>
+                        <label className={styles.checkbox}>
+                            <input type="checkbox" {...createForm.register("sets")} />
+                            В сете
+                        </label>
 
-                            <label className={styles.checkbox}>
-                                <input type="checkbox" {...createForm.register("sets")} />
-                                В сете
-                            </label>
+                        <label className={styles.checkbox}>
+                            <input type="checkbox" {...createForm.register("status")} />
+                            Статус
+                        </label>
+                        
 
-                            <label className={styles.checkbox}>
-                                <input type="checkbox" {...createForm.register("status")} />
-                                Статус
-                            </label>
-                            
+                        <input className={settings.submit} type="submit" value="Создать" style={{marginTop: 20}} />
+                    </form>
+                )
+            }
 
-                            <input className={settings.submit} type="submit" value="Создать" style={{marginTop: 20}} />
-                        </form>
-                    )
-                }
-
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th scope='col'>ID</th>
-                            <th scope='col'>Название</th>
-                            <th scope='col'>В навигации</th>
-                            <th scope='col'>В сеты</th>
-                            <th scope='col'>Статус</th>
-                            <th scope='col'>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            query.data?.data?.categories?.map(item => (
-                                <CategoryItem key={"category." + item.id} id={item.id} name={item.name} nav={item.navigation} set={item.sets} status={item.status} />
-                            ))
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        <th scope='col'>ID</th>
+                        <th scope='col'>Название</th>
+                        <th scope='col'>В навигации</th>
+                        <th scope='col'>В сеты</th>
+                        <th scope='col'>Статус</th>
+                        <th scope='col'>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        query.data?.data?.categories?.map(item => (
+                            <CategoryItem key={"category." + item.id} id={item.id} name={item.name} nav={item.navigation} set={item.sets} status={item.status} />
+                        ))
+                    }
+                </tbody>
+            </table>
+        </>
     )
 }
 
@@ -165,7 +165,7 @@ function CategoryItem({id, name, nav, set, status}) {
             {
                 editable && (
                     <tr>
-                        <th scope="row">edit {id}...</th>
+                        <th scope="row">{id}...</th>
                         <td>
                             <input defaultValue={name} type="text" className={styles.input} onChange={(event) => setData({...data, name: event.target.value})} />
                         </td>
